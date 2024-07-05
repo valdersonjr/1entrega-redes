@@ -1,9 +1,3 @@
-/* ******************************/
-/* FGA/Eng. Software/ FRC       */
-/* Prof. Fernando W. Cruz       */
-/* Codigo: tcpServer.c          */
-/* ******************************/
-
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -19,36 +13,32 @@
 void atende_cliente(int novo_sd, struct sockaddr_in endCli);
 
 int main(int argc, char *argv[]) {
-    struct sockaddr_in ladoServ; /* Contém dados do servidor */
-    struct sockaddr_in endCli;   /* Contém dados do cliente */
-    int sd, novo_sd;             /* Socket descriptors */
-    socklen_t tam_Cli;           /* Tamanho do endereço do cliente */
+    struct sockaddr_in ladoServ; 
+    struct sockaddr_in endCli;   
+    int sd, novo_sd;            
+    socklen_t tam_Cli;         
 
-    /* Confere o número de argumentos passados para o programa */
     if (argc < 2) {
         printf("Uso correto: %s <porta_do_servidor>\n", argv[0]);
         exit(1);
     }
 
-    memset((char *)&ladoServ, 0, sizeof(ladoServ)); /* Limpa estrutura */
-    ladoServ.sin_family = AF_INET;                  /* Config. socket para internet */
-    ladoServ.sin_addr.s_addr = htonl(INADDR_ANY);   /* Recebe de qualquer interface de rede */
-    ladoServ.sin_port = htons(atoi(argv[1]));       /* Porta do servidor */
+    memset((char *)&ladoServ, 0, sizeof(ladoServ)); 
+    ladoServ.sin_family = AF_INET;                  
+    ladoServ.sin_addr.s_addr = htonl(INADDR_ANY);   
+    ladoServ.sin_port = htons(atoi(argv[1]));       
 
-    /* Cria socket */
     sd = socket(AF_INET, SOCK_STREAM, 0);
     if (sd < 0) {
         fprintf(stderr, "Criação do socket falhou!\n");
         exit(1);
     }
 
-    /* Liga o socket à porta e IP definidos */
     if (bind(sd, (struct sockaddr *)&ladoServ, sizeof(ladoServ)) < 0) {
         fprintf(stderr, "Ligação do socket falhou!\n");
         exit(1);
     }
 
-    /* Ouve por conexões */
     if (listen(sd, 5) < 0) {
         fprintf(stderr, "A escuta por conexões falhou!\n");
         exit(1);
@@ -73,7 +63,7 @@ void atende_cliente(int novo_sd, struct sockaddr_in endCli) {
 
     while (1) {
         while (1) {
-            n = recv(novo_sd, buf, MAX_SIZE, 0); /* Recebe dados ... */
+            n = recv(novo_sd, buf, MAX_SIZE, 0);
             if (n > 0) {
                 buf[n] = '\0';
                 printf("Cliente: %s", buf);
@@ -92,8 +82,8 @@ void atende_cliente(int novo_sd, struct sockaddr_in endCli) {
 
         while (1) {
             printf("> ");
-            fgets(buf, MAX_SIZE, stdin);    /* Lê dados do teclado */
-            send(novo_sd, buf, strlen(buf), 0); /* Envia dados ...  */
+            fgets(buf, MAX_SIZE, stdin);   
+            send(novo_sd, buf, strlen(buf), 0);
             if (strncmp(buf, "ENDTURN", 7) == 0) {
                 break;
             }
